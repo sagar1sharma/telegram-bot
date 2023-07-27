@@ -8,29 +8,31 @@ const bot = new TelegramBot(process.env.botToken, {polling: true});
 
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Hi! I am sagar, You may specify name of movies/series and I will provide you the download link, but do make sure to spell it correctly!')
-});
+    bot.sendMessage(chatId, 'Hi! I am sagar, You may specify name of movies/series and I will provide you the download link, but do make sure to spell it correctly! /n remember, Title will be followed by magnet link that you have to copy and paste in the browser, then the download automatically start')});
 
 bot.on('message', (msg) => {
+    if (msg.text && !msg.text.startsWith('/start')) {
     const chatId = msg.chat.id;
     const searchTerm = msg.text.replace(/ /g, '%20');
 
 
     getDownloadLinks(searchTerm)
-    .then((links) => {
+    .then(async(links) => {
         if(links.length > 0){
-                links.forEach((link) => {
-                    const customServerURL = 'http://localhost:3001/';
-                    const torrentLink = customServerURL+`download/`+link.magnetLink;
-                    const message = `<b>${link.title}</b>\nMagnet Link: <a href="${torrentLink}"> Download </a>`;
-                    bot.sendMessage(chatId, message, {parse_mode: 'HTML'});
-                  });
+                  for(var i = 0; i < 10; i++){
+                    const title = `${links[i].title}`;
+                    await bot.sendMessage(chatId, title);
+
+                    const message = `${links[i].magnetLink}`;
+                    await bot.sendMessage(chatId, message);
+                  }
                 }
         else{
             bot.sendMessage(chatId, 'Sorry! make sure you spelled correctly!');
         }
     })
     .catch((err) => bot.sendMessage(chatId, 'Some error took place'));
+}
 });
 
 async function getDownloadLinks(searchTerm){
@@ -50,6 +52,7 @@ async function getDownloadLinks(searchTerm){
               const magnetLink = magnetLinkElement.attr('href');
               links.push({ title, magnetLink });
             }
+
           });
         
         return links;
