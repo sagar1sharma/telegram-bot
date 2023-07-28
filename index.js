@@ -2,7 +2,7 @@ import axios from "axios";
 import cheerio, { text } from "cheerio";
 import TelegramBot from "node-telegram-bot-api";
 import dotenv from "dotenv";
-import expres from "express";
+import express from "express";
 
 const app = express();
 dotenv.config();
