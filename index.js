@@ -2,7 +2,9 @@ import axios from "axios";
 import cheerio, { text } from "cheerio";
 import TelegramBot from "node-telegram-bot-api";
 import dotenv from "dotenv";
+import expres from "express";
 
+const app = express();
 dotenv.config();
 const bot = new TelegramBot(process.env.botToken, {polling: true});
 
@@ -61,4 +63,8 @@ async function getDownloadLinks(searchTerm){
         console.log('Error');
     }
 }
+
+app.listen(process.env.PORT || 3000, () => {
+    console.log("Server started");
+})
 
